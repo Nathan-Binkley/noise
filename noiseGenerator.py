@@ -2,7 +2,16 @@ import pygame
 import random
 #Basic premise is to create "noise" More specifically Perlin noice using Pygame to visualize this noise
 
-def createNoise(x = 50, y = 50):
+def createNoise():
+    master_points = []
+    for i in range(50):
+        x_points = []
+        for j in range(50):
+            x_points.append(random.randint(0,255))
+        master_points.append(x_points)
+    return master_points
+
+def createPNoise(x = 50, y = 50):
     master_points = []
     startPoint = 0
     for i in range(x):
@@ -10,7 +19,7 @@ def createNoise(x = 50, y = 50):
         rowPoints = []
         for i in range(y):
             choice = random.randint(0,2) #grow (2) or shrink (0) or stay equal (1)
-            rowPoints.append(startPoint) # all 3 RGB for this particular pixel
+            rowPoints.append(startPoint % 255) # all 3 RGB for this particular pixel
             if choice == 2:
                 startPoint += random.randint(3,30)
             elif choice == 0:
@@ -18,6 +27,7 @@ def createNoise(x = 50, y = 50):
             else:
                 pass
         master_points.append(rowPoints) # Creates a 2D array
+    
     return master_points
 
 def getMinMax2D(Array): #Helpful to get a normalized scale of the noise
@@ -38,12 +48,13 @@ def displayNoise():
 
 global_min = []
 global_max = []
-for i in range(10000):
-    x = createNoise()
-    minMax = getMinMax2D(x)
-    Loc_Min = minMax[0]
-    Loc_Max = minMax[1]
-    global_min.append(Loc_Min)
-    global_max.append(Loc_Max)
 
+x = createNoise()
+minMax = getMinMax2D(x)
+Loc_Min = minMax[0]
+Loc_Max = minMax[1]
+global_min.append(Loc_Min)
+global_max.append(Loc_Max)
+
+print(x)
 print("MIN: " + str(min(global_min)) + " MAX: " + str(max(global_max)))

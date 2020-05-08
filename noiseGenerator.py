@@ -8,7 +8,7 @@ import random
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 WIDTH = 500 # SET LARGER IF YOU WANT YOUR LAPTOP TO DIE -- or if running on more beefy PC
-HEIGHT = 500
+HEIGHT = 500 # 800-1000 is optimal stress test
 RESOLUTION = 1
 BW = False # Set to true if you want just black and white noise
 
@@ -64,7 +64,7 @@ def displayNoise(Noise):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
+        
         for row in Noise:
             x = 0
             for pixel in row:
@@ -78,14 +78,14 @@ def displayNoise(Noise):
                         pygame.draw.rect(window,WHITE,(x,y,RESOLUTION,RESOLUTION))
                 x += RESOLUTION
             y += RESOLUTION
-
+        
         pygame.display.flip()
         fpsClock.tick(30)
 
 global_min = []
 global_max = []
 
-x = createPNoise()
+x = createNoise()
 minMax = getMinMax2D(x)
 Loc_Min = minMax[0]
 Loc_Max = minMax[1]

@@ -1,24 +1,23 @@
-import pygame
 import random
 import os, sys
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # ONLY WORKS IF YOU IMPORT PYGAME *AFTER* YOU DO THIS -- Note to self
+import pygame
 import random
-from pygame import gfxdraw
 #Basic premise is to create "noise" More specifically Perlin noice using Pygame to visualize this noise
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-WIDTH = 500
+WIDTH = 500 # SET LARGER IF YOU WANT YOUR LAPTOP TO DIE -- or if running on more beefy PC
 HEIGHT = 500
-BW = False #Set to true if you want just black and white noise
+RESOLUTION = 1
+BW = False # Set to true if you want just black and white noise
 
-#pygame.gfxdraw.pixel(surface, x, y, color) -- PUTTING A COLOR AT A PIXEL
 
 def createNoise():
     master_points = []
-    for i in range(WIDTH):
+    for i in range(HEIGHT):
         x_points = []
-        for j in range(HEIGHT):
+        for j in range(WIDTH):
             x_points.append(random.randint(0,255))
         master_points.append(x_points)
     return master_points
@@ -71,13 +70,14 @@ def displayNoise(Noise):
             for pixel in row:
                 if not BW:
                     window.set_at((x, y), (pixel,pixel,pixel))
+                    pygame.draw.rect(window,(pixel,pixel,pixel),(x,y,RESOLUTION,RESOLUTION))
                 else:
                     if pixel > 255//2:
-                        window.set_at((x, y), BLACK)
+                        pygame.draw.rect(window,BLACK,(x,y,RESOLUTION,RESOLUTION))
                     else:
-                        window.set_at((x, y), WHITE)
-                x += 1
-            y += 1
+                        pygame.draw.rect(window,WHITE,(x,y,RESOLUTION,RESOLUTION))
+                x += RESOLUTION
+            y += RESOLUTION
 
         pygame.display.flip()
         fpsClock.tick(30)
@@ -85,7 +85,7 @@ def displayNoise(Noise):
 global_min = []
 global_max = []
 
-x = createNoise()
+x = createPNoise()
 minMax = getMinMax2D(x)
 Loc_Min = minMax[0]
 Loc_Max = minMax[1]

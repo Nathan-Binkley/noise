@@ -7,9 +7,9 @@ import random
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-WIDTH = 500 # SET LARGER IF YOU WANT YOUR LAPTOP TO DIE -- or if running on more beefy PC
-HEIGHT = 500 # 800-1000 is optimal stress test
-RESOLUTION = 1
+WIDTH = 50 # SET LARGER IF YOU WANT YOUR LAPTOP TO DIE -- or if running on more beefy PC
+HEIGHT = 50 # 800-1000 is optimal stress test
+RESOLUTION = 5
 BW = False # Set to true if you want just black and white noise
 
 
@@ -25,15 +25,34 @@ def createNoise():
 def createPNoise(x = WIDTH, y = HEIGHT):
     master_points = []
     startPoint = 0
+    above = 0
+    addSub = 0
     for i in range(x):
-        startPoint = random.randint(500,10000)
+        try:
+            startAbove = master_points[i-1][0]
+        except:
+            startAbove = random.randint(500,10000)
+        addSub = random.randint(0,2)
+        if addSub == 0: #subtract
+            startPoint = startAbove - random.randint(3,30)
+        elif addSub == 2: # add
+            startPoint = startAbove + random.randint(3,30)
+        else: #Do nothing if it's 1
+            pass
+
         rowPoints = []
-        for i in range(y):
+
+        for j in range(y):
             choice = random.randint(0,2) #grow (2) or shrink (0) or stay equal (1)
             rowPoints.append(startPoint % 255) # all 3 RGB for this particular pixel
-            if choice == 2:
+            try:
+                above = master_points[i-1][y] 
+            except:
+                above = 0
+            if choice == 2: #ADD to
                 startPoint += random.randint(3,30)
-            elif choice == 0:
+                
+            elif choice == 0: #Subtract from
                 startPoint -= random.randint(3,30)
             else:
                 pass
@@ -55,10 +74,16 @@ def getMinMax2D(Array): #Helpful to get a normalized scale of the noise
 
 def displayNoise(Noise):
     pygame.init()
-    window = pygame.display.set_mode((WIDTH, HEIGHT)) 
+    window = pygame.display.set_mode((WIDTH * RESOLUTION, HEIGHT * RESOLUTION)) 
+
     y = 0
     x = 0
+
     fpsClock = pygame.time.Clock()  
+
+    globalMin = getMinMax2D(Noise)[0]
+    globalMax = getMinMax2D(Noise)[1]
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -78,19 +103,19 @@ def displayNoise(Noise):
                         pygame.draw.rect(window,WHITE,(x,y,RESOLUTION,RESOLUTION))
                 x += RESOLUTION
             y += RESOLUTION
-        
+        y = 0
         pygame.display.flip()
         fpsClock.tick(30)
 
 global_min = []
 global_max = []
 
-x = createNoise()
+x = createPNoise()
 minMax = getMinMax2D(x)
 Loc_Min = minMax[0]
 Loc_Max = minMax[1]
-global_min.append(Loc_Min)
-global_max.append(Loc_Max)
+# global_min.append(Loc_Min)
+# global_max.append(Loc_Max)
 displayNoise(x)
 
 

@@ -10,7 +10,7 @@ BLACK = (0,0,0)
 WIDTH = 500 # SET LARGER IF YOU WANT YOUR LAPTOP TO DIE -- or if running on more beefy PC
 HEIGHT = 500 # 800-1000 is optimal stress test
 RESOLUTION = 1
-BW = True # Set to true if you want just black and white noise
+BW = False # Set to true if you want just black and white noise
 
 noiseType = 0 #1 for regular Noise, non-1 for Perlin Noise
 
@@ -36,7 +36,7 @@ def createPNoise(x = WIDTH, y = HEIGHT): # Creates ratios between 0 and 1
         try:
             startAbove = master_points[i-1][0]
         except:
-            startAbove = random.randint(50000,100000)
+            startAbove = random.randint(500,1000)
         addSub = random.randint(0,2)
         if addSub == 0 and startAbove > 0: #subtract
             startPoint = startAbove - random.randint(3,30)
@@ -72,19 +72,26 @@ def createPNoise(x = WIDTH, y = HEIGHT): # Creates ratios between 0 and 1
 
         master_points.append(rowPoints) # Creates a 2D array
 
+    # print(scalar)
+    
+    #Can probably do this somewhere in the main loop up there^^^, but idk a way for it to remain smooth really atm.
+
+    for i in range(len(master_points)): #ROW #Ensuring no negative values
+        for j in range(len(master_points[i])): #COL
+            if master_points[i][j] < 0:
+                master_points[i][j] *= -1
+            
     scalar = getMinMax2D(master_points)
     minPoints = scalar[0]
     maxPoints = scalar[1]
-    print(scalar)
     
-    for i in range(len(master_points)): #ROW
+    for i in range(len(master_points)): #ROW #SCALING
         for j in range(len(master_points[i])): #COL
-            
             master_points[i][j] = master_points[i][j]/maxPoints
 
-            #print(master_points[i][j])
+    # print(master_points)
 
-    return master_points
+    return master_points # returns scaled % values from pixel value/max
 
 def getMinMax2D(Array): #Helpful to get a normalized scale of the noise
     maximum = Array[0][0]
@@ -101,13 +108,8 @@ def getMinMax2D(Array): #Helpful to get a normalized scale of the noise
 def displayNoise(Noise):
     pygame.init()
     window = pygame.display.set_mode((WIDTH * RESOLUTION , HEIGHT * RESOLUTION )) 
-
-
     fpsClock = pygame.time.Clock()  
 
-    globalMin = getMinMax2D(Noise)[0]
-    globalMax = getMinMax2D(Noise)[1]
-    # print(Noise)
     while True:
         y = 0
         x = 0
@@ -119,19 +121,19 @@ def displayNoise(Noise):
         for row in Noise:
             x = 0
             for pixel in row:
+                # print(pixel)
+                # print(int(pixel * 255))
                 if not BW:
-                    #window.set_at((x, y), (int(pixel*255), int(pixel*255), int(pixel*255)))
                     try:
-                        pygame.draw.rect(window,BLACK,(x, y, RESOLUTION, RESOLUTION))
+                        pygame.draw.rect(window,(int(pixel*255), int(pixel*255), int(pixel*255)),(x, y, RESOLUTION, RESOLUTION))
                     except Exception as e:
-                        pass
-                        # print(e)
-                        # print(pixel)
+                        print(e)
+                        print(pixel*255)
                 else:
                     if noiseType == 1:
                         pygame.draw.rect(window,(int(pixel*255), int(pixel*255), int(pixel*255)),(x, y, RESOLUTION, RESOLUTION))
                     else:
-                        if pixel > 255//2:
+                        if int(pixel * 255) > 255//2:
                             pygame.draw.rect(window,BLACK,(x, y, RESOLUTION, RESOLUTION))
                         else:
                             pygame.draw.rect(window,WHITE,(x, y, RESOLUTION, RESOLUTION))

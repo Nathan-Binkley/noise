@@ -28,7 +28,7 @@ def createNoise(): # Creates matrix of 1s and 0s
 def createPNoise(x = WIDTH, y = HEIGHT): # Creates ratios between 0 and 1
     
     master_points = []
-    startPoint = 0
+    startPoint = 1
     above = 0
     addSub = 0
 
@@ -39,9 +39,9 @@ def createPNoise(x = WIDTH, y = HEIGHT): # Creates ratios between 0 and 1
             startAbove = random.randint(500,1000)
         addSub = random.randint(0,2)
         if addSub == 0 and startAbove > 0: #subtract
-            startPoint = startAbove - random.randint(3,30)
+            startPoint = startAbove - random.randint(1,30)
         elif addSub == 2: # add
-            startPoint = startAbove + random.randint(3,30)
+            startPoint = startAbove + random.randint(1,30)
         else: #Do nothing if it's 1
             pass
 
@@ -57,22 +57,23 @@ def createPNoise(x = WIDTH, y = HEIGHT): # Creates ratios between 0 and 1
                 above = 0
 
             choice = random.randint(0,2) #grow (2) or shrink (0) or stay equal (1)
-            rowPoints.append(startPoint) # all 3 RGB for this particular pixel
+             # all 3 RGB for this particular pixel
 
             if choice == 2: #Add to
-
-                startPoint += random.randint(3,30)
+                
+                startPoint = above + random.randint(3,30)
             
             elif choice == 0: #Subtract from
-
-                startPoint -= random.randint(3,30)
+                
+                startPoint = above - random.randint(3,30)
 
             else:
                 pass
+            rowPoints.append(startPoint)
 
         master_points.append(rowPoints) # Creates a 2D array
 
-    # print(scalar)
+    
     
     #Can probably do this somewhere in the main loop up there^^^, but idk a way for it to remain smooth really atm.
 
@@ -85,7 +86,8 @@ def createPNoise(x = WIDTH, y = HEIGHT): # Creates ratios between 0 and 1
     minPoints = scalar[0]
     maxPoints = scalar[1]
     
-    for i in range(len(master_points)): #ROW #SCALING
+    #SCALING
+    for i in range(len(master_points)): #ROW 
         for j in range(len(master_points[i])): #COL
             master_points[i][j] = master_points[i][j]/maxPoints
 

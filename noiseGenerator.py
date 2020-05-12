@@ -49,12 +49,15 @@ def createPNoise(x = WIDTH, y = HEIGHT): # Creates ratios between 0 and 1
 
         for j in range(y):
             try:
+                
                 above = master_points[i-1][j] 
-                # print("ABOVE CURRENT POINT: " + str(above))
-                # print("CURRENT POINT: " + str(startPoint))
+                
+                
             except Exception as e:
-                # print(e)
-                above = 0
+                if above == 0:
+                    above = random.randint(1,500)
+                else:
+                    above = above
 
             choice = random.randint(0,2) #grow (2) or shrink (0) or stay equal (1)
              # all 3 RGB for this particular pixel
@@ -119,7 +122,10 @@ def displayNoise(Noise):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        
+        if noiseType == 1:
+            Noise = createNoise() #Remove for singular noise
+        else:
+            Noise = createPNoise()
         for row in Noise:
             x = 0
             for pixel in row:
@@ -143,7 +149,96 @@ def displayNoise(Noise):
             y += RESOLUTION
         
         pygame.display.flip()
-        fpsClock.tick(30)
+        fpsClock.tick(1)
+
+
+
+def createPNoisePA(x = WIDTH, y = HEIGHT): #Pixel Array implementation
+    
+    master_points = []
+    startPoint = 1
+    above = 0
+    addSub = 0
+
+    for i in range(x):
+        try:
+            startAbove = master_points[i-1][0][0]
+        except:
+            startAbove = random.randint(500,1000)
+        addSub = random.randint(0,2)
+        if addSub == 0 and startAbove > 0: #subtract
+            startPoint = startAbove - random.randint(1,30)
+        elif addSub == 2: # add
+            startPoint = startAbove + random.randint(1,30)
+        else: #Do nothing if it's 1
+            pass
+
+        rowPoints = []
+
+        for j in range(y):
+            try:
+                
+                above = master_points[i-1][j][0] 
+                
+                # print("ABOVE CURRENT POINT: " + str(above))
+                # print("CURRENT POINT: " + str(startPoint))
+            except Exception as e:
+                # print(e)
+                if above == 0:
+                    above = random.randint(1,500)
+                else:
+                    above = above
+
+            choice = random.randint(0,2) #grow (2) or shrink (0) or stay equal (1)
+             # all 3 RGB for this particular pixel
+
+            if choice == 2: #Add to
+                startPoint = above + random.randint(3,30)
+            elif choice == 0: #Subtract from
+                startPoint = above - random.randint(3,30)
+            else:
+                pass
+
+            rowPoints.append((startPoint,startPoint,startPoint))
+
+        master_points.append(rowPoints) # Creates a 2D array
+
+    #Can probably do this somewhere in the main loop up there^^^, but idk a way for it to remain smooth really atm.
+
+    for i in range(len(master_points)): #ROW #Ensuring no negative values
+        for j in range(len(master_points[i])): #COL
+            if master_points[i][j][0] < 0:
+                master_points[i][j] *= -1
+
+
+    return master_points # returns scaled % values from pixel value/max
+
+def displayNoisePA(Noise):
+    pygame.init()
+    window = pygame.display.set_mode((WIDTH * RESOLUTION , HEIGHT * RESOLUTION )) 
+    fpsClock = pygame.time.Clock()  
+    WindowPA = pygame.PixelArray(window)
+
+    while True:
+        y = 0
+        x = 0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        if noiseType == 1:
+            Noise = createNoise() #Remove for singular noise
+        else:
+            Noise = createPNoisePA()
+        
+        for x in Noise:
+            for y in x:
+                WindowPA[x][y] = (Noise[x][y])
+                
+        WindowPA.blit()
+
+        pygame.display.flip()
+        fpsClock.tick(1)
 
 global_min = []
 global_max = []
@@ -152,6 +247,6 @@ noise = 0
 if noiseType == 1:
     noise = createNoise()
 else:
-    noise = createPNoise()
+    noise = createPNoisePA()
 
-displayNoise(noise)
+displayNoisePA(noise)
